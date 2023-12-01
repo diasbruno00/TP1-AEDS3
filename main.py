@@ -3,6 +3,7 @@ import networkx as net
 from collections import deque
 import matplotlib.pyplot as plt
 
+listaDeNosPretos = []
 
 
 def busca_em_largura(G, inicio, alvo):
@@ -34,9 +35,6 @@ def imprimir_direcoes(caminho, no_vermelho):
         no_vermelho = passo
     print()
 
-
-
-
 def adicionarCoordenadasGrafo(G):
 # Adicione os nós ao grafo
     width, height = img.size
@@ -57,6 +55,8 @@ def validacaoArestaGrafo(G,pixels):
                     # Verifique se nenhum dos dois pixels é preto
                     if pixels[y * width + x] != (0, 0, 0) and pixels[ny * width + nx] != (0, 0, 0):
                         G.add_edge((y, x), (ny, nx), weight=1)
+                    else: 
+                        listaDeNosPretos.append((y,x))
                 
 
                 
@@ -76,37 +76,21 @@ def buscarCorVerdeAndRetornaCoordenada(pixels):
                 return (y, x)
     return None
 
-def imprimirGrafo(G, inicio, alvo):
-    plt.figure(1)
-    pos = net.spring_layout(G)
-    net.draw_networkx(G, pos=pos, with_labels=True)
-    if inicio is not None:
-        net.draw_networkx_nodes(G, pos=pos, nodelist=[inicio], node_color='r', node_size=500)
-    if alvo is not None:
-        net.draw_networkx_nodes(G, pos=pos, nodelist=[alvo], node_color='g', node_size=500)
-    plt.show()
 
 
-def imprimirCaminho(G, caminho):
-    plt.figure(1)
-    pos = net.spring_layout(G)
-    net.draw_networkx(G, pos=pos, with_labels=True)
-    if caminho:
-        edges = [(caminho[i-1], caminho[i]) for i in range(1, len(caminho))]
-        net.draw_networkx_edges(G, pos=pos, edgelist=edges, edge_color='r', width=2)
-    plt.show()
 
 
 if __name__ == "__main__":
 
-    # Abra a imagem
-    #nomeArquivo = str(input('Informe o arquivo bitmap: '))
-    #print(f'Observação: Não é necessário informar a extensão do arquivo')
-    #nomeArquivo = nomeArquivo +".bmp"
-
-
     
-    img = Image.open('toy_map.bmp')
+    print(f'Observação: Não é necessário informar a extensão do arquivo \n')
+
+    nomeArquivo = str(input('Informe o arquivo bitmap: '))
+    print("\n")
+
+    nomeArquivo = nomeArquivo +".bmp"
+   
+    img = Image.open(nomeArquivo)
 
     img_rgb = img.convert('RGB')
 
@@ -114,20 +98,23 @@ if __name__ == "__main__":
 
     G = net.Graph()
 
+    print("Processando... \n")
+
     adicionarCoordenadasGrafo(G)
     validacaoArestaGrafo(G,pixels)
 
     no_vermelho = buscarCorVemelhaAndRetornaCoordenada(pixels)
     no_verde = buscarCorVerdeAndRetornaCoordenada(pixels)
-
-
+    
     if no_vermelho is not None and no_verde is not None:
         caminho = busca_em_largura(G, no_vermelho, no_verde)
         if caminho is not None:
+            print("É possivel deslocar o equipamento: \n")
             imprimir_direcoes(caminho, no_vermelho)
         else:
-            print("Não é possível mover este equipamento.")
+            print("Não é possível descolar esse equipamento. \n")
+     
+
 
     
-    imprimirGrafo(G, no_vermelho, no_verde)
 
