@@ -78,43 +78,44 @@ def buscarCorVerdeAndRetornaCoordenada(pixels):
 
 
 
-
-
 if __name__ == "__main__":
 
+    try:
+
+        print(f'Observação: Não é necessário informar a extensão do arquivo \n')
+
+        nomeArquivo = str(input('Informe o arquivo bitmap: '))
+        print("\n")
+
+        nomeArquivo = nomeArquivo +".bmp"
     
-    print(f'Observação: Não é necessário informar a extensão do arquivo \n')
+        img = Image.open(nomeArquivo)
 
-    nomeArquivo = str(input('Informe o arquivo bitmap: '))
-    print("\n")
+        img_rgb = img.convert('RGB')
 
-    nomeArquivo = nomeArquivo +".bmp"
-   
-    img = Image.open(nomeArquivo)
+        pixels = list(img_rgb.getdata())
 
-    img_rgb = img.convert('RGB')
+        G = net.Graph()
 
-    pixels = list(img_rgb.getdata())
+        print("Processando... \n")
 
-    G = net.Graph()
+        adicionarCoordenadasGrafo(G)
+        validacaoArestaGrafo(G,pixels)
 
-    print("Processando... \n")
+        no_vermelho = buscarCorVemelhaAndRetornaCoordenada(pixels)
+        no_verde = buscarCorVerdeAndRetornaCoordenada(pixels)
 
-    adicionarCoordenadasGrafo(G)
-    validacaoArestaGrafo(G,pixels)
-
-    no_vermelho = buscarCorVemelhaAndRetornaCoordenada(pixels)
-    no_verde = buscarCorVerdeAndRetornaCoordenada(pixels)
-    
-    if no_vermelho is not None and no_verde is not None:
-        caminho = busca_em_largura(G, no_vermelho, no_verde)
-        if caminho is not None:
-            print("É possivel deslocar o equipamento: \n")
-            imprimir_direcoes(caminho, no_vermelho)
-        else:
-            print("Não é possível descolar esse equipamento. \n")
-     
-
-
+        if no_vermelho is not None and no_verde is not None:
+            caminho = busca_em_largura(G, no_vermelho, no_verde)
+            if caminho is not None:
+                print("É possivel deslocar o equipamento: \n")
+                imprimir_direcoes(caminho, no_vermelho)
+            else:
+                print("Não é possível descolar esse equipamento. \n")
+        
+    except FileNotFoundError as e:
+        print(f' Arquivo {nomeArquivo} encontrado no diretorio')
+    except Exception as e:
+        print(f'Erro inesperado {e}')
     
 
